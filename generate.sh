@@ -23,17 +23,20 @@
 set -e
 
 source_dir=0
+bazel_opts=""
 
 usage() {
   printf "usage: %s flags\nwhere flags can be:\n" "${BASH_SOURCE[0]}"
   printf "\t-s\tuse the original source directory instead of bazel execroot\n"
+  printf "\t-o <string>\tflags to pass onto bazel build\n"
   printf "\n"
 }
 
-while getopts "sh" opt; do
+while getopts "sho:" opt; do
   case "${opt}" in
     "s") source_dir=1 ;;
     "h") usage; exit 0;;
+		"o") bazel_opts=${OPTARG};;
     *) >&2 echo "invalid option ${opt}"; exit 1;;
   esac
 done
@@ -106,7 +109,7 @@ fi
   "--noshow_progress" \
   "--noshow_loading_progress" \
   "--output_groups=${OUTPUT_GROUPS}" \
-  "$@" \
+  $bazel_opts \
   $("${QUERY_CMD[@]}") > /dev/null
 
 echo "[" > "${COMPDB_FILE}"
